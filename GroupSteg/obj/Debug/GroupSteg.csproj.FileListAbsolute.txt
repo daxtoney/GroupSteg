@@ -1,0 +1,9 @@
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\bin\Debug\GroupSteg.exe.config
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\bin\Debug\GroupSteg.exe
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\bin\Debug\GroupSteg.pdb
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.csprojResolveAssemblyReference.cache
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.Form1.resources
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.Properties.Resources.resources
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.csproj.GenerateResource.Cache
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.exe
+C:\Users\toneydr1\Documents\COMP 322 A - OBJ ORIENT-ADV PROG\Group Project\GroupSteg\GroupSteg\obj\Debug\GroupSteg.pdb
