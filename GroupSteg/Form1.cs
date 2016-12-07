@@ -133,6 +133,51 @@ namespace GroupSteg
 
             return Encoding.ASCII.GetString(stream.ToArray());
         }
+
+        private unsafe void setMessage(string message) {
+	        //const unsigned char magicNumber[4] = "316";
+            var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
+	        const byte mask = 0x1;
+	        const byte stripMask = 0xfe;	//only the last bit is a 0
+	        uint currCharIndex = 0;	//"iterator"
+
+	        //write the magic number
+	        for(int i = 0; i < 3; i++) {
+		        for(int j = 0; j < 8; j++) {
+			        //strip the last bit of the current byte
+			        rawBytes[currCharIndex] &= stripMask;
+
+			        //to read a bit use and, to write a bit use or
+			        rawBytes[currCharIndex] |= (magicNumber[i] & (mask << j)) ? 1 : 0;
+
+			        currCharIndex++;
+		        }
+	        }
+
+	        //write the rest of it, make sure to null-terminate
+	        for(int i = 0; i < message.Length; i++) {
+		        for(int j = 0; j < 8; j++) {
+			        //strip the last bit of the current byte
+			        rawBytes[currCharIndex] &= stripMask;
+
+			        //to read a bit use and, to write a bit use or
+			        rawBytes[currCharIndex] |= (message[i] & (mask << j)) ? 1 : 0;
+
+			        currCharIndex++;
+		        }
+	        }
+
+	        for(int j = 0; j < 8; j++) {
+		        //strip the last bit of the current byte 8 times to create the terminal null
+		        rawBytes[currCharIndex] &= stripMask;
+	
+		        currCharIndex++;
+	        }
+        }
+
+        private void writeImage(string filename) {
+	        BMP_Handler.saveBMP(filename, rawBytes, width, height);
+        }
     }
 
     public class BMP_Handler : Form
@@ -144,6 +189,11 @@ namespace GroupSteg
             byte[] ret = new byte[10];
             ret[0] = 0x2;
             return ret;
+        }
+
+        public static void saveBMP(string file, byte[] imageData, int width, int height)
+        {
+
         }
     }
 }
