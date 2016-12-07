@@ -12,31 +12,31 @@ using System.IO.MemoryStream;
 
 namespace GroupSteg
 {
-    struct _Win3xBitmapHeader
+    public struct _Win3xBitmapHeader
     {
 	    // size = 20 + 16 + 4 = 40
-	    uint	Size;            /* Size of this header in bytes */
-	    Int32	Width;           /* Image width in pixels */
-	    Int32	Height;          /* Image height in pixels */
-	    Int16	Planes;          /* Number of color planes */
-	    Int16	BitsPerPixel;    /* Number of bits per pixel */
+        public uint Size;            /* Size of this header in bytes */
+        public Int32 Width;           /* Image width in pixels */
+        public Int32 Height;          /* Image height in pixels */
+        public Int16 Planes;          /* Number of color planes */
+        public Int16 BitsPerPixel;    /* Number of bits per pixel */
 	    /* Fields added for Windows 3.x follow this line */
-	    uint	Compression;     /* Compression methods used */
-	    uint	SizeOfBitmap;    /* Size of bitmap in bytes */
-	    Int32	HorzResolution;  /* Horizontal resolution in pixels per meter */
-	    Int32   VertResolution;  /* Vertical resolution in pixels per meter */
-	    uint	ColorsUsed;      /* Number of colors in the image */
-	    uint	ColorsImportant; /* Minimum number of important colors */
+        public uint Compression;     /* Compression methods used */
+        public uint SizeOfBitmap;    /* Size of bitmap in bytes */
+        public Int32 HorzResolution;  /* Horizontal resolution in pixels per meter */
+        public Int32 VertResolution;  /* Vertical resolution in pixels per meter */
+        public uint ColorsUsed;      /* Number of colors in the image */
+        public uint ColorsImportant; /* Minimum number of important colors */
     }
 
-    struct tagBITMAPFILEHEADER 
+    public struct tagBITMAPFILEHEADER 
     {
-      char[] type = new char[2];
-      Int32     Size;
-      Int16     Reserved1;
-      Int16     Reserved2;
-      Int32     OffBits;
-      // size = 2 4 2 2 4 = 14
+        public char[] type = new char[2];
+        public Int32 Size;
+        public Int16 Reserved1;
+        public Int16 Reserved2;
+        public Int32 OffBits;
+        // size = 2 4 2 2 4 = 14
     }
 
     public partial class Form1 : Form
@@ -220,7 +220,77 @@ namespace GroupSteg
 
         public static void saveBMP(string file, byte[] imageData, int width, int height)
         {
+            int padSize = 4-((width*3)%4);
+	        if(padSize==4)
+            {
+		        padSize	= 0;
+            }
 
+	        int size = 3*width*height;
+
+	        //Create the headers and set the values appropriately 
+	        tagBITMAPFILEHEADER fileHead;
+	        fileHead.type[0] = 'B';
+	        fileHead.type[1] = 'M';
+	        fileHead.Size = 54 + size + (padSize*height);
+	        fileHead.Reserved1 = 0;	
+	        fileHead.Reserved2 = 0;
+	        fileHead.OffBits = 54;
+
+	        _Win3xBitmapHeader fileInfo;
+	        fileInfo.Size = 40;
+	        fileInfo.Width = width;
+	        fileInfo.Height = height;
+	        fileInfo.Planes = 1;
+	        fileInfo.BitsPerPixel = 24;
+	        fileInfo.Compression = 0;
+	        fileInfo.SizeOfBitmap = 0;
+	        fileInfo.HorzResolution = 0x00000b13;
+	        fileInfo.VertResolution = 0x00000b13;
+	        fileInfo.ColorsUsed = 0;
+	        fileInfo.ColorsImportant = 0;
+
+	        // Transfer the image to a new array so the values can be swapped
+	        byte[] transferArr = new byte [size];
+	        for(int i = 0; i<size; i++){
+		        transferArr[i] = imageData[i];
+	        }
+
+	        // Swap the R and B values
+	        byte[] swappedArr = new byte [size];
+	        for(int i = 0; i<size;i+=3){
+		        swappedArr[i] = transferArr[i+2];
+		        swappedArr[i+1] = transferArr[i+1];
+		        swappedArr[i+2] = transferArr[i];
+	        }
+
+	        // Set the padding array up
+	        byte[] padArr = new byte[padSize];
+	        for(int i = 0; i<padSize; i++){
+		        padArr[i] = 0;
+	        }
+
+            ////////////////////////////////////
+            // Converted to C# up to here 
+            ////////////////////////////////////
+
+	        // Output the headers to the new bitmap file
+	        std::ofstream fout(file, std::ios::out | std::ios::binary);
+	        if(fout.fail())
+	        {
+		        exit(1);
+	        }
+	        fout.seekp(0);
+	        fout.write(reinterpret_cast<char*>(&fileHead), 14);
+	        fout.write(reinterpret_cast<char*>(&fileInfo), 40);
+	        // Output the image data to the file
+	        for(int i = 0; i<height; i++){
+		        fout.write(reinterpret_cast<char*>(swappedArr+width*3*i),width*3);
+		        fout.write(reinterpret_cast<char*>(padArr),padSize);
+	        }
+
+	        // Clean up
+	        fout.close();
         }
     }
 }
