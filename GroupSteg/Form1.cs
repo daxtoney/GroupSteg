@@ -12,6 +12,33 @@ using System.IO.MemoryStream;
 
 namespace GroupSteg
 {
+    struct _Win3xBitmapHeader
+    {
+	    // size = 20 + 16 + 4 = 40
+	    uint	Size;            /* Size of this header in bytes */
+	    Int32	Width;           /* Image width in pixels */
+	    Int32	Height;          /* Image height in pixels */
+	    Int16	Planes;          /* Number of color planes */
+	    Int16	BitsPerPixel;    /* Number of bits per pixel */
+	    /* Fields added for Windows 3.x follow this line */
+	    uint	Compression;     /* Compression methods used */
+	    uint	SizeOfBitmap;    /* Size of bitmap in bytes */
+	    Int32	HorzResolution;  /* Horizontal resolution in pixels per meter */
+	    Int32   VertResolution;  /* Vertical resolution in pixels per meter */
+	    uint	ColorsUsed;      /* Number of colors in the image */
+	    uint	ColorsImportant; /* Minimum number of important colors */
+    }
+
+    struct tagBITMAPFILEHEADER 
+    {
+      char[] type = new char[2];
+      Int32     Size;
+      Int16     Reserved1;
+      Int16     Reserved2;
+      Int32     OffBits;
+      // size = 2 4 2 2 4 = 14
+    }
+
     public partial class Form1 : Form
     {
         private Bitmap MyImage;
