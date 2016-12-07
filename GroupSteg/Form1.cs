@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO.MemoryStream;
 //using System.Windows.Forms.PictureBox;
 
 namespace GroupSteg
@@ -55,15 +56,30 @@ namespace GroupSteg
 
         }
 
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                System.IO.StreamReader sr = new System.IO.StreamReader(openFileDialog1.FileName);
+                // Save file here
+                sr.Close();
+            }
+        }
+
     }
     /* 
      * I'm just making stuff up now... 
      * Trying to copy everything over and 
      * convert it to C#
-     *      
+     */
     public class SteganographyCodex : Form
     {
-        private byte rawBytes;
+        private byte[] rawBytes;
         int width;
         int height;
 
@@ -72,8 +88,11 @@ namespace GroupSteg
             rawBytes = BMP_Handler.loadBMP(filename, width, height);
         }
 
-        private string getMessage(){
-            const byte magicNumber[] = 316;
+        // Almost converted to C# entirely 
+        // All except for constructChar
+        private unsafe string getMessage(){
+            var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
+            //const byte magicNumber[] = 316;
 	        const byte mask = 0x1;
 	        uint currCharIndex = 0;	//"iterator"
 	        byte constructChar;
@@ -93,17 +112,26 @@ namespace GroupSteg
 		        return "";
 	        }
 
-	        ostringstream out;
+            // Initialize the streams 
+            // Create the stream
+            System.IO.MemoryStream stream = new System.IO.MemoryStream();
+            // Create the mechanism to write to the stream
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(stream);
+            writer.Flush();
+            stream.Position = 0; 
+
+	        //ostringstream out;
 
 	        do {
 		        constructChar = 0;
 		        for(int i = 0; i < 8; i++) {
 			        constructChar |= (rawBytes[currCharIndex++] & mask) << i;
 		        }
-		        out << constructChar;
+                writer.Write(constructChar);
+		        //out << constructChar;
 	        } while(constructChar != '\0');
 
-	        return out.str();
+            return Encoding.ASCII.GetString(stream.ToArray());
         }
     }
 
@@ -111,10 +139,11 @@ namespace GroupSteg
     {
         public BMP_Handler() { }
 
-        public void loadBMP(string filename, int width, int height)
+        public static byte[] loadBMP(string filename, int width, int height)
         {
-
+            byte[] ret = new byte[10];
+            ret[0] = 0x2;
+            return ret;
         }
     }
-    */
 }
