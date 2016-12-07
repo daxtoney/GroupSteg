@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO.MemoryStream;
 //using System.Windows.Forms.PictureBox;
 
 namespace GroupSteg
@@ -31,7 +30,7 @@ namespace GroupSteg
 
     public struct tagBITMAPFILEHEADER 
     {
-        public char[] type = new char[2];
+        public char[] type;// = new char[2];
         public Int32 Size;
         public Int16 Reserved1;
         public Int16 Reserved2;
@@ -117,7 +116,7 @@ namespace GroupSteg
 
         // Almost converted to C# entirely 
         // All except for constructChar
-        private unsafe string getMessage(){
+        private string getMessage(){
             var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
             //const byte magicNumber[] = 316;
 	        const byte mask = 0x1;
@@ -161,7 +160,7 @@ namespace GroupSteg
             return Encoding.ASCII.GetString(stream.ToArray());
         }
 
-        private unsafe void setMessage(string message) {
+        private void setMessage(string message) {
 	        //const unsigned char magicNumber[4] = "316";
             var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
 	        const byte mask = 0x1;
