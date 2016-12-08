@@ -117,24 +117,25 @@ namespace GroupSteg
         // Almost converted to C# entirely 
         // All except for constructChar
         private string getMessage(){
-            var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
+            byte[] magicNumber = new byte[] { 0x3, 0x1, 0x6 };
             //const byte magicNumber[] = 316;
 	        const byte mask = 0x1;
 	        uint currCharIndex = 0;	//"iterator"
-	        byte constructChar;
+	        byte constructChar = 0;
 	
 	        //read enough to check for magic number
-	        byte[] buffer;
+	        string buffer = "";
 	        for(int i = 0; i < 3; i++) {
-		        constructChar = 0;
+		        //constructChar = "";
 		        for(int j = 0; j < 8; j++) {
 			        //to read a bit use and, to write a bit use or
-			        constructChar |= (rawBytes[currCharIndex++] & mask) << j;
+			        constructChar |= (byte)((rawBytes[currCharIndex++] & mask) << j);
 		        }
-		        buffer[i] = constructChar;
+		        buffer += constructChar;
 	        }
 
-	        if(buffer[0] != magicNumber[0] || buffer[1] != magicNumber[1] || buffer[2] != magicNumber[2]) {
+            if (buffer[0] != magicNumber[0] || buffer[1] != magicNumber[1] || buffer[2] != magicNumber[2])
+            {
 		        return "";
 	        }
 
@@ -149,9 +150,8 @@ namespace GroupSteg
 	        //ostringstream out;
 
 	        do {
-		        constructChar = 0;
 		        for(int i = 0; i < 8; i++) {
-			        constructChar |= (rawBytes[currCharIndex++] & mask) << i;
+			        constructChar += (byte)((rawBytes[currCharIndex++] & mask) << i);
 		        }
                 writer.Write(constructChar);
 		        //out << constructChar;
@@ -162,7 +162,7 @@ namespace GroupSteg
 
         private void setMessage(string message) {
 	        //const unsigned char magicNumber[4] = "316";
-            var magicNumber = new byte[] { 0x3, 0x1, 0x6 };
+            byte[] magicNumber = new byte[] { 0x3, 0x1, 0x6 };
 	        const byte mask = 0x1;
 	        const byte stripMask = 0xfe;	//only the last bit is a 0
 	        uint currCharIndex = 0;	//"iterator"
@@ -174,7 +174,7 @@ namespace GroupSteg
 			        rawBytes[currCharIndex] &= stripMask;
 
 			        //to read a bit use and, to write a bit use or
-			        rawBytes[currCharIndex] |= (magicNumber[i] & (mask << j)) ? 1 : 0;
+                    rawBytes[currCharIndex] |= (magicNumber[i] & (mask << j)) ? 1 : 0; // This is the line I am having issues with now
 
 			        currCharIndex++;
 		        }
@@ -187,7 +187,7 @@ namespace GroupSteg
 			        rawBytes[currCharIndex] &= stripMask;
 
 			        //to read a bit use and, to write a bit use or
-			        rawBytes[currCharIndex] |= (message[i] & (mask << j)) ? 1 : 0;
+			        rawBytes[currCharIndex] |= (message[i] & (mask << j)) ? 1 : 0; // And this one
 
 			        currCharIndex++;
 		        }
